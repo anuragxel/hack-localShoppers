@@ -1,0 +1,91 @@
+<html>
+	<head>
+		<title>Search Products Nearby</title>
+		<script src="http://maps.google.com/maps/api/js?sens or=true&.js"></script>
+		<style>
+			#map_canvas {
+				width: 400px;
+				height: 300px;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<form id="cords" action="geoSearchProduct.php" method="post">
+			Product Name 	 :<input type=text name="prod_name" placeholder="Product Name"></br>
+			Category	 	 :<select name="category">
+					  <option value="clth">Clothing			</option>
+					  <option value="food">Food				</option>
+					  <option value="meds">Medicines		</option>
+					  <option value="stats">Stationary		</option>
+					  <option value="handc">Handicrafts		</option>
+					  </select></br>
+					  <input type='hidden' name='lat' value=''/>
+					  <input type='hidden' name='lon' value=''/>
+					  <input id="subclick" type=submit value="Submit">
+			</form>
+			<div id='map_canvas'></div>
+		</div>
+		<script>
+
+		var global_lat = 0;
+		var global_lon = 0;
+		var once = false;
+		document.getElementById("subclick").addEventListener("click", function() {
+
+			var formInfo = document.forms['cords'];
+			formInfo.elements['lat'].value = global_lat;
+			formInfo.elements['lon'].value = global_lon;
+
+		});
+
+		(function() {
+	    
+	    	if(!!navigator.geolocation) {
+	    	
+	    		var map;
+	    	
+		    	var mapOptions = {
+		    		zoom: 15,
+		    		mapTypeId: google.maps.MapTypeId.ROADMAP
+		    	};
+		    	
+		    	map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
+	    	
+	    		navigator.geolocation.getCurrentPosition(function(position) {
+	    		
+		    		var geolocate = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+		    	
+		    		var myMarker = new google.maps.Marker({
+		    			map: map,
+		    			position: geolocate,
+		       	 		draggable: true
+					});
+
+		    		google.maps.event.addListener(myMarker, 'dragend', function(evt){
+		    			global_lat = evt.latLng.lat();
+		    			global_lon = evt.latLng.lng();
+		    		});
+
+		    		google.maps.event.addListener(myMarker, 'dragstart', function(evt){
+						global_lat = evt.latLng.lat();
+		    			global_lon = evt.latLng.lng();
+					});
+
+					if(!once) {
+						once = true;
+		    			global_lat = position.coords.latitude;
+		    			global_lon = position.coords.longitude;
+
+		    		}	    		
+		    		map.setCenter(geolocate);
+		    		
+	    		});
+	    		
+	    	} else {
+	    		document.getElementById('map_canvas').innerHTML = 'No Geolocation Support.';
+	    	}
+	    })();
+	  </script>
+	</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+      <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Local Shopper - Register</title>
+	<!-- BOOTSTRAP STYLES-->
+    <link href="assets/css/bootstrap.css" rel="stylesheet" />
+     <!-- FONTAWESOME STYLES-->
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+        <!-- CUSTOM STYLES-->
+    <link href="assets/css/custom.css" rel="stylesheet" />
+     <!-- GOOGLE FONTS-->
+   <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+   <script src="http://maps.google.com/maps/api/js?sens or=true&.js"></script>
+	<style>
+			#map_canvas {
+				width: 400px;
+				height: 400px;
+				float: left;
+				position: relative;
+			}
+			#form_div {
+				float: left;
+				position: relative;	
+			}
+	</style>
+</head>
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default navbar-cls-top " role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Local Shopper</a> 
+            </div>
+  <div style="color: white;
+padding: 15px 50px 5px 50px;
+float: right;
+font-size: 16px;">  </div>
+        </nav>   
+           <!-- /. NAV TOP  -->
+                <nav class="navbar-default navbar-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav" id="main-menu">
+				<li class="text-center">
+                    <img src="assets/img/find_user.png" class="user-image img-responsive"/>
+				</li>
+				
+                    	
+                </ul>
+               
+            </div>
+            
+        </nav>  
+        <!-- /. NAV SIDE  -->
+        <div id="page-wrapper" >
+            <div id="page-inner">
+                <div class="row">
+                    <div class="col-md-12">
+                     			<div>
+                     				<div id="form_div" class="col-md-6">
+                     					<form id="cords"action="register.php" method="post" role="form">
+                     						<div class="form-group">
+                                            	<label>User Name</label>
+                                            	<input type=text name="user_name" placeholder="User Name" class="form-control">
+                                        	</div>
+                                        	<div class="form-group">
+                                            	<label>Shop Name</label>
+                                            	<input type=text name="shop_name" placeholder="Shop Name" class="form-control">
+                                        	</div>
+                                        	<div class="form-group">
+                                            	<label>Password</label>
+                                            	<input type=password name="password" class="form-control">
+                                        	</div>
+                                        	<div class="form-group">
+                                        	    <label>Re Enter Password</label>
+                                        	    <input type=password name="re_password" class="form-control">
+                                        	</div>
+                                        	<div class="form-group">
+                                        		<label>Category</label>
+                     							<select name="category" class="form-control">
+                     						  		<option value="clth">Clothing			</option>
+                     						  		<option value="food">Food				</option>
+                     						  		<option value="meds">Medicines			</option>
+                     						  		<option value="stats">Stationary		</option>
+                     						  		<option value="handc">Handicrafts		</option>
+                     							</select></br>
+                     						  	<input type='hidden' name='lat' value=''/>
+                     						  	<input type='hidden' name='lon' value=''/>
+                     							<input id="subclick" type=submit value="Submit">
+                     						</div>
+                     					</form>
+                     				</div>
+                     				<div class="form-group">
+                     					<label>Shop Location</label>
+                     					<div id='map_canvas'>
+                     					</div>
+                     				</div>
+                     			</div>
+                     			<script>
+
+                     			var global_lat = 0;
+                     			var global_lon = 0;
+                     			var once = false;
+                     			document.getElementById("subclick").addEventListener("click", function() {
+
+                     				var formInfo = document.forms['cords'];
+                     				formInfo.elements['lat'].value = global_lat;
+                     				formInfo.elements['lon'].value = global_lon;
+
+                     			});
+
+                     			(function() {
+                     		    
+                     		    	if(!!navigator.geolocation) {
+                     		    	
+                     		    		var map;
+                     		    	
+                     			    	var mapOptions = {
+                     			    		zoom: 15,
+                     			    		mapTypeId: google.maps.MapTypeId.ROADMAP
+                     			    	};
+                     			    	
+                     			    	map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
+                     		    	
+                     		    		navigator.geolocation.getCurrentPosition(function(position) {
+                     		    		
+                     			    		var geolocate = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                     			    	
+                     			    		var myMarker = new google.maps.Marker({
+                     			    			map: map,
+                     			    			position: geolocate,
+                     			       	 		draggable: true
+                     						});
+
+                     			    		google.maps.event.addListener(myMarker, 'dragend', function(evt){
+                     			    			global_lat = evt.latLng.lat();
+                     			    			global_lon = evt.latLng.lng();
+                     			    		});
+
+                     			    		google.maps.event.addListener(myMarker, 'dragstart', function(evt){
+                     							global_lat = evt.latLng.lat();
+                     			    			global_lon = evt.latLng.lng();
+                     						});
+
+                     						if(!once) {
+                     							once = true;
+                     			    			global_lat = position.coords.latitude;
+                     			    			global_lon = position.coords.longitude;
+
+                     			    		}	    		
+                     			    		map.setCenter(geolocate);
+                     			    		
+                     		    		});
+                     		    		
+                     		    	} else {
+                     		    		document.getElementById('map_canvas').innerHTML = 'No Geolocation Support.';
+                     		    	}
+                     		    })();
+                     		  </script>
+                    </div>
+                </div>
+                 <!-- /. ROW  -->
+                 <hr />
+   		</div>
+             <!-- /. PAGE INNER  -->
+            </div>
+         <!-- /. PAGE WRAPPER  -->
+        </div>
+     <!-- /. WRAPPER  -->
+    <!-- SCRIPTS -AT THE BOTOM TO REDUCE THE LOAD TIME-->
+    <!-- JQUERY SCRIPTS -->
+    <script src="assets/js/jquery-1.10.2.js"></script>
+      <!-- BOOTSTRAP SCRIPTS -->
+    <script src="assets/js/bootstrap.min.js"></script>
+    <!-- METISMENU SCRIPTS -->
+    <script src="assets/js/jquery.metisMenu.js"></script>
+      <!-- CUSTOM SCRIPTS -->
+    <script src="assets/js/custom.js"></script> 
+</body>
+</html>
